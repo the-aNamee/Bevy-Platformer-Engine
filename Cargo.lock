@@ -2937,6 +2937,7 @@ version = "0.1.0"
 dependencies = [
  "bevy",
  "bevy_framepace",
+ "runner",
 ]
 
 [[package]]
@@ -3143,6 +3144,13 @@ dependencies = [
  "bitflags 2.6.0",
  "serde",
  "serde_derive",
+]
+
+[[package]]
+name = "runner"
+version = "0.1.0"
+dependencies = [
+ "bevy",
 ]
 
 [[package]]
