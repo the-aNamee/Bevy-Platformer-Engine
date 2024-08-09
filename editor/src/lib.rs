@@ -18,6 +18,8 @@ fn basic_setup(
     commands.spawn(Camera2dBundle {
         projection: OrthographicProjection {
             scale: 2.0,
+            far: 1000.0,
+            near: -1000.0,
             ..default()
         },
         ..default()
