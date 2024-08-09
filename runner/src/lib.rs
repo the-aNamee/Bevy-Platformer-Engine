@@ -18,6 +18,10 @@ fn setup_general(
 ) {
     // Spawn camera
     commands.spawn(Camera2dBundle {
+        projection: OrthographicProjection {
+            scale: 2.0,
+            ..default()
+        },
         ..default()
     });
 }

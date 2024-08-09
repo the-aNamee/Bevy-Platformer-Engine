@@ -26,7 +26,7 @@ pub fn _setup_debug_objects(
         },
         ObjectProperties {
             size,
-            gravity: vec2(0.0, -50.0)
+            gravity: vec2(0.0, -50.0 * 0.0)
         },
         _DebugPLayer
     ));

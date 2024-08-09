@@ -6,10 +6,15 @@ edition = "2021"
 [dependencies]
 bevy = "0.14.0"
 bevy_framepace = "0.17.1"
+bevy_editor_pls = { git = "https://github.com/zhaop/bevy_editor_pls", branch = "bevy-0.14" }
+bevy-inspector-egui = "0.25.1"
+
+editor = {path = "editor"}
 runner = {path = "runner"}
 
 [workspace]
 
 members = [
+    "editor",
     "runner"
 ]
