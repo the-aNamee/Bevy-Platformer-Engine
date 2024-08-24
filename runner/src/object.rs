@@ -1,36 +1,9 @@
 use crate::world_collisions::{StaticMap, DOWN_WALL_PUSH_DIRECTION, LEFT_WALL_PUSH_DIRECTION, RIGHT_WALL_PUSH_DIRECTION, UP_WALL_PUSH_DIRECTION};
 
-use bevy::{color::palettes::basic::RED, math::vec2, prelude::*};
+use bevy::prelude::*;
 
 
-pub fn _setup_debug_objects(
-    mut commands: Commands
-) {
-    let size = vec2(26.0, 48.0);
-    commands.spawn((
-        SpriteBundle {
-            sprite: Sprite {
-                color: Color::Srgba(RED),
-                custom_size: Some(size),
-                ..default()
-            },
-            transform: Transform {
-                translation: vec2(64.0, 148.0).extend(0.0),
-                ..default()
-            },
-            ..default()
-        },
-        Object {
-            velocity: vec2(0.0, 0.0),
-            ..default()
-        },
-        ObjectProperties {
-            size,
-            gravity: vec2(0.0, -50.0 * 0.0)
-        },
-        _DebugPLayer
-    ));
-}
+
 
 pub fn basic_object_system(
     mut object_query: Query<(&mut Object, &mut Transform, &ObjectProperties)>,
@@ -79,40 +52,31 @@ pub fn basic_object_system(
     }
 }
 
-pub fn _debug_player_system(
-    mut query: Query<&mut Object, With<_DebugPLayer>>,
-    time: Res<Time>,
-    input: Res<ButtonInput<KeyCode>>
-) {
-    let mut player = query.single_mut();
-    
-    let movement_input = (input.pressed(KeyCode::KeyD) as i8 - input.pressed(KeyCode::KeyA) as i8) as f32;
-    let jump_input = input.just_pressed(KeyCode::Space);
-    player.velocity.x += movement_input * 750.0 * time.delta_seconds();
 
-    //// println!("On floor = {}", player.is_on_floor);
-    
-    if jump_input && player.is_on_floor {
-        player.velocity.y = 100.0;
-    }
-
-    player.velocity.x *= (0.1 as f32).powf(time.delta_seconds());
-}
 
 #[derive(Component)]
 pub struct _DebugPLayer;
 
-#[derive(Component, Default)]
+#[derive(Component, Reflect)]
 pub struct Object {
-    velocity: Vec2,
-    is_on_floor: bool,
-    is_on_ceiling: bool,
-    is_on_right_wall: bool,
-    is_on_left_wall: bool
+    pub velocity: Vec2,
+    pub is_on_floor: bool,
+    pub is_on_ceiling: bool,
+    pub is_on_right_wall: bool,
+    pub is_on_left_wall: bool
 } 
 
-#[derive(Component)]
+#[derive(Component, Reflect)]
 pub struct ObjectProperties {
-    size: Vec2,
-    gravity: Vec2
+    pub size: Vec2,
+    pub gravity: Vec2
+}
+
+
+impl Object {
+    pub fn basic() -> Object { Object { velocity: Vec2::ZERO, is_on_floor: false, is_on_ceiling: false, is_on_right_wall: false, is_on_left_wall: false } }
+}
+
+impl ObjectProperties {
+    pub fn new(size: Vec2, gravity: Vec2) -> ObjectProperties { ObjectProperties { size, gravity } }
 }

@@ -9,13 +9,11 @@ bevy_framepace = "0.17.1"
 bevy_editor_pls = { git = "https://github.com/zhaop/bevy_editor_pls", branch = "bevy-0.14" }
 bevy-inspector-egui = "0.25.1"
 
-editor = { path = "editor" }
 runner = { path = "runner" }
-object_manager ={ path = "object_manager" }
+bevy_ecs_tilemap = "0.14.0"
 
 [workspace]
 
 members = [
-    "editor", "object_manager",
     "runner"
 ]
