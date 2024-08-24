@@ -2,6 +2,7 @@ use bevy::math::vec2;
 use bevy::prelude::*;
 use bevy::input::gamepad::{GamepadConnection, GamepadEvent};
 use crate::tilemap::TILE_SIZE;
+use crate::ui::{MenuRes, CurrentMenu};
 
 
 const CURSOR_SPEED: f32 = 300.0;
@@ -37,20 +38,26 @@ pub fn setup_input(
     ));
 }
 
-pub fn input_system(
+pub fn cursor_input_system(
     axes: Res<Axis<GamepadAxis>>,
     buttons: Res<ButtonInput<GamepadButton>>,
     my_gamepad: Option<Res<MyGamepad>>,
     
     mut cursors: Query<&mut Transform, With<Cursor>>,
+    mut menu_res: ResMut<MenuRes>,
     time: Res<Time<Fixed>>
 ) {
+    if menu_res.current_menu != CurrentMenu::None {
+        // Not dealing with cursor atm.
+        return;
+    }
+
     let Some(&MyGamepad(gamepad)) = my_gamepad.as_deref() else {
-        // no gamepad is connected
+        // No gamepad is connected.
         return;
     };
 
-    // The joysticks are represented using a separate axis for X and Y
+    // The joysticks are represented using a separate axis for X and Y.
     let axis_lx = GamepadAxis {
         gamepad, axis_type: GamepadAxisType::LeftStickX
     };
@@ -59,7 +66,7 @@ pub fn input_system(
     };
 
     if let (Some(x), Some(y)) = (axes.get(axis_lx), axes.get(axis_ly)) {
-        // combine X and Y into one vector
+        // Combine X and Y into one vector.
         let left_stick = Vec2::new(x, y);
 
         let mut cursor_transform = cursors.single_mut();
@@ -72,13 +79,18 @@ pub fn input_system(
         }
     }
 
-    // In a real game, the buttons would be configurable, but here we hardcode them
+    // In a real game, the buttons would be configurable, but here we hardcode them.
     let place_button = GamepadButton {
         gamepad, button_type: GamepadButtonType::East
     };
 
     if buttons.pressed(place_button) {
         println!("Place")
+    }
+
+    let enter_ui_button = GamepadButton::new(gamepad, GamepadButtonType::DPadUp);
+    if buttons.pressed(enter_ui_button) {
+        menu_res.set_to_sidebars();
     }
 }
 

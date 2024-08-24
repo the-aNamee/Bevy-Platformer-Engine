@@ -1,7 +1,6 @@
 use bevy::prelude::*;
 use serde::Deserialize;
 use ron;
-use zip::result;
 use std::{fs, io};
 
 const OBJECT_FILE_EXTENSION: &str = "object";
@@ -10,13 +9,13 @@ const OBJECT_FOLDER_PATH: &str = "objects";
 mod file;
 
 #[derive(Resource)]
-pub struct AllObjectData(Vec<ObjectData>);
+pub struct AllObjectData(pub Vec<ObjectData>);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ObjectData {
-    name: String,
-    discription: String,
-    sprites: Vec<Handle<Image>>
+    pub name: String,
+    pub discription: String,
+    pub sprites: Vec<Handle<Image>>
 }
 
 #[derive(Deserialize, Debug, Default)]
@@ -29,6 +28,9 @@ pub fn load_all_objects_system(
     mut images: ResMut<Assets<Image>>,
     mut object_data_resource: ResMut<AllObjectData>
 ) {
+    // Air.
+    object_data_resource.0.push(ObjectData::just_air());
+
     let mut entries = fs::read_dir(OBJECT_FOLDER_PATH).unwrap()
         .map(|res| res.map(|e| e.path()))
         .collect::<Result<Vec<_>, io::Error>>().unwrap();
@@ -75,6 +77,16 @@ impl Plugin for ObjectManagerPlugin {
     }
 }
 
+impl ObjectData {
+    fn just_air() -> ObjectData {
+        return ObjectData {
+            name: "Air".to_string(),
+            discription: "Nothin".to_string(),
+            sprites: Vec::new()
+        };
+    }
+}
+
 impl ObjectFileData {
     fn load_object_data_from_file(path: &str) -> Option<ObjectFileData> {
         let string = file::extract_file_from_zip(path, "object.ron");
@@ -101,5 +113,9 @@ impl ObjectFileData {
 impl AllObjectData {
     fn empty() -> AllObjectData {
         return AllObjectData(Vec::new());
+    }
+
+    pub fn get_object_data(&self, index: u32) -> ObjectData {
+        return self.0[index as usize].clone();
     }
 }
