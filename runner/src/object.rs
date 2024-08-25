@@ -14,9 +14,9 @@ pub fn basic_object_system(
     for (mut object, mut transform, object_properties) in &mut object_query {
         let ppos = transform.translation.truncate();
         
-        object.velocity += object_properties.gravity * time.delta_seconds() * 0.5;
+        object.velocity += object_properties.gravity_multiplier * time.delta_seconds() * 0.5;
         transform.translation += object.velocity.extend(0.0) * time.delta_seconds();
-        object.velocity += object_properties.gravity * time.delta_seconds() * 0.5;
+        object.velocity += object_properties.gravity_multiplier * time.delta_seconds() * 0.5;
 
         let cpos = transform.translation.truncate();
 
@@ -69,14 +69,27 @@ pub struct Object {
 #[derive(Component, Reflect)]
 pub struct ObjectProperties {
     pub size: Vec2,
-    pub gravity: Vec2
+    pub gravity_multiplier: Vec2
 }
 
 
 impl Object {
-    pub fn basic() -> Object { Object { velocity: Vec2::ZERO, is_on_floor: false, is_on_ceiling: false, is_on_right_wall: false, is_on_left_wall: false } }
+    pub fn basic() -> Object {
+        Object {
+            velocity: Vec2::ZERO,
+            is_on_floor: false,
+            is_on_ceiling: false,
+            is_on_right_wall: false,
+            is_on_left_wall: false
+        }
+    }
 }
 
 impl ObjectProperties {
-    pub fn new(size: Vec2, gravity: Vec2) -> ObjectProperties { ObjectProperties { size, gravity } }
+    pub fn new(size: Vec2) -> ObjectProperties {
+        ObjectProperties {
+            size,
+            gravity_multiplier: Vec2::NEG_Y * 45.0
+        }
+    }
 }
