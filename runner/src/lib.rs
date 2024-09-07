@@ -1,9 +1,11 @@
 mod world_collisions;
 mod object;
+mod properties;
 
 use bevy::prelude::*;
 pub use object::{Object, ObjectProperties};
 pub use world_collisions::StaticMap;
+pub use properties::LevelProperties;
 
 
 pub struct EnginePlugin;

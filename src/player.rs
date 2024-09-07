@@ -1,5 +1,11 @@
 use bevy::prelude::*;
+use bevy_ecs_ldtk::prelude::*;
 use runner::Object;
+
+
+pub fn spawn_player_system( 
+    commands: Commands
+) {}
 
 pub fn player_system(
     mut query: Query<&mut Object, With<Player>>,
@@ -19,5 +25,14 @@ pub fn player_system(
     player.velocity.x *= (0.1 as f32).powf(time.delta_seconds());
 }
 
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct Player;
+
+#[derive(Default, Bundle, LdtkEntity)]
+pub struct PlayerSpawnPoint {
+    player: Player,
+    #[sprite_sheet_bundle]
+    sprite_sheet_bundle: LdtkSpriteSheetBundle,
+    #[grid_coords]
+    grid_coords: GridCoords
+}

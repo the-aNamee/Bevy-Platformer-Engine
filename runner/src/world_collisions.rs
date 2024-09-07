@@ -1,8 +1,7 @@
 use bevy::{color::palettes::basic::*, math::vec2, prelude::*};
+use crate::properties::LevelProperties;
 
 // use crate::object;
-
-const TILE_SIZE: f32 = 32.0;
 
 pub const UP_WALL_PUSH_DIRECTION: Vec2 = vec2(0.0, 1.0);
 pub const DOWN_WALL_PUSH_DIRECTION: Vec2 = vec2(0.0, -1.0);
@@ -121,8 +120,8 @@ pub struct PerpWall {
 impl PerpWall {
     fn new_tiled(position: Vec2, length: f32) -> Self {
         PerpWall {
-            position: position * TILE_SIZE,
-            length: length * TILE_SIZE
+            position: position,
+            length: length
         }
     }
 }

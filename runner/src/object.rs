@@ -1,5 +1,5 @@
 use crate::world_collisions::{StaticMap, DOWN_WALL_PUSH_DIRECTION, LEFT_WALL_PUSH_DIRECTION, RIGHT_WALL_PUSH_DIRECTION, UP_WALL_PUSH_DIRECTION};
-
+use crate::properties::LevelProperties;
 use bevy::prelude::*;
 
 
@@ -7,16 +7,21 @@ use bevy::prelude::*;
 
 pub fn basic_object_system(
     mut object_query: Query<(&mut Object, &mut Transform, &ObjectProperties)>,
+    level_properties: Res<LevelProperties>,
     wall_query: Query<&StaticMap>,
     time: Res<Time>,
     mut gizmos: Gizmos
-) {  
+) {
     for (mut object, mut transform, object_properties) in &mut object_query {
         let ppos = transform.translation.truncate();
         
-        object.velocity += object_properties.gravity_multiplier * time.delta_seconds() * 0.5;
+        let a = object_properties.gravity_multiplier;
+        let b = level_properties.gravity;
+        let real_gravity = a * b;
+        
+        object.velocity += real_gravity * time.delta_seconds() * 0.5;
         transform.translation += object.velocity.extend(0.0) * time.delta_seconds();
-        object.velocity += object_properties.gravity_multiplier * time.delta_seconds() * 0.5;
+        object.velocity += real_gravity * time.delta_seconds() * 0.5;
 
         let cpos = transform.translation.truncate();
 
@@ -89,7 +94,7 @@ impl ObjectProperties {
     pub fn new(size: Vec2) -> ObjectProperties {
         ObjectProperties {
             size,
-            gravity_multiplier: Vec2::NEG_Y * 45.0
+            gravity_multiplier: Vec2::ONE
         }
     }
 }
