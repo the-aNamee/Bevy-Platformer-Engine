@@ -1,5 +1,4 @@
 use bevy::{color::palettes::basic::*, math::vec2, prelude::*};
-use crate::properties::LevelProperties;
 
 // use crate::object;
 
@@ -42,11 +41,11 @@ impl StaticMap {
     }
 }
 
-pub fn setup_level(
-    mut commands: Commands
-) {
-    commands.spawn(StaticMap::_debug_test());
-}
+// pub fn setup_level(
+//     mut commands: Commands
+// ) {
+//     commands.spawn(StaticMap::_debug_test());
+// }
 
 pub fn show_debug(
     mut gizmos: Gizmos,

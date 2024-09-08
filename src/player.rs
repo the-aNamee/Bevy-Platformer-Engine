@@ -3,9 +3,22 @@ use bevy_ecs_ldtk::prelude::*;
 use runner::Object;
 
 
-pub fn spawn_player_system( 
-    commands: Commands
-) {}
+pub fn spawn_player_system(
+    spawn_points: Query<&Transform, With<PlayerSpawnPoint>>,
+    mut players: Query<&mut Transform, (With<Player>, Without<PlayerSpawnPoint>)>
+  ) {
+    println!("There are {} spawn points.", spawn_points.iter().count());
+    println!("There are {} players.", players.iter().count());
+    let Ok(spawn_point) = spawn_points.get_single() else {
+        println!("Not only one PlayerSpawnPoint");
+      return;
+    };
+    
+    let mut player_transform = players.single_mut();
+    player_transform.translation = spawn_point.translation;
+
+    info!("Spawn point is at {spawn_point:?}");
+  }
 
 pub fn player_system(
     mut query: Query<&mut Object, With<Player>>,
@@ -28,7 +41,7 @@ pub fn player_system(
 #[derive(Component, Default)]
 pub struct Player;
 
-#[derive(Default, Bundle, LdtkEntity)]
+#[derive(Default, Component, LdtkEntity)]
 pub struct PlayerSpawnPoint {
     player: Player,
     #[sprite_sheet_bundle]

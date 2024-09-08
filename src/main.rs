@@ -4,7 +4,7 @@ use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_ecs_ldtk::prelude::*;
 use runner::{EnginePlugin, LevelProperties};
 use level::setup_level_system;
-use player::player_system;
+use player::{player_system, spawn_player_system};
 mod level;
 mod player;
 
@@ -17,7 +17,7 @@ fn main() {
         .insert_resource(LevelProperties::empty())
         .insert_resource(LevelSelection::index(0))
         .add_systems(Startup, setup_framerate)
-        .add_systems(Startup, setup_level_system)
+        .add_systems(Startup, (setup_level_system, spawn_player_system).chain())
         .add_systems(Update, player_system)
         .run();
 }
