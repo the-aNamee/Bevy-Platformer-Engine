@@ -1,6 +1,10 @@
-use bevy::{color::palettes::basic::*, math::vec2, prelude::*};
+use std::iter::Cloned;
+
+use bevy::{color::palettes::basic::*, ecs::query::QueryIter, math::vec2, prelude::*};
+use bevy_ecs_tilemap::prelude::*;
 
 // use crate::object;
+use crate::globals::Directional;
 
 pub const UP_WALL_PUSH_DIRECTION: Vec2 = vec2(0.0, 1.0);
 pub const DOWN_WALL_PUSH_DIRECTION: Vec2 = vec2(0.0, -1.0);
@@ -8,35 +12,61 @@ pub const RIGHT_WALL_PUSH_DIRECTION: Vec2 = vec2(-1.0, 0.0);
 pub const LEFT_WALL_PUSH_DIRECTION: Vec2 = vec2(1.0, 0.0);
 
 
-#[derive(Default, Component, Debug)]
+#[derive(Component, Debug)]
 pub struct StaticMap {
+    // pub walls: Directional<PerpWalls>,
     pub right_walls: PerpWalls,
     pub left_walls: PerpWalls,
     pub up_walls: PerpWalls,
     pub down_walls: PerpWalls,
+    pub is_setup: bool
 }
 
 impl StaticMap {
+    // pub fn add_tiles<'a, 'b>(
+    //         &mut self,
+    //         tiles: Query<'_, '_, &TilePos>
+    //     ) {
+    //     let mut new_up_perp_walls = PerpWalls::empty();
+
+    //     for tile_position in tiles.iter() {
+    //         let tile_vec_pos = vec2(tile_position.x as f32, tile_position.y as f32);
+    //         let new_pos = tile_vec_pos;
+    //         // let new_perp_wall = PerpWall::new()
+    //     }
+    // }
+
     pub fn _debug_test() -> Self {
         let mut up_walls = PerpWalls(Vec::new());
-        up_walls.0.push(PerpWall::new_tiled(vec2(1.0, 0.0), 4.0));
+        up_walls.0.push(PerpWall::new(vec2(1.0, 0.0), 4.0));
         // up_walls.0.push(PerpWall::new_tiled(vec2(3.0, 2.0), 0.0));``
-        up_walls.0.push(PerpWall::new_tiled(vec2(5.0, -3.0), 1.0));
+        up_walls.0.push(PerpWall::new(vec2(5.0, -3.0), 1.0));
 
         let mut down_walls = PerpWalls(Vec::new());
-        down_walls.0.push(PerpWall::new_tiled(vec2(-1.0, 3.0), 2.0));
+        down_walls.0.push(PerpWall::new(vec2(-1.0, 3.0), 2.0));
 
         let mut right_walls = PerpWalls(Vec::new());
-        right_walls.0.push(PerpWall::new_tiled(vec2(5.0, 3.0), 2.0));
+        right_walls.0.push(PerpWall::new(vec2(5.0, 3.0), 2.0));
 
         let mut left_walls = PerpWalls(Vec::new());
-        left_walls.0.push(PerpWall::new_tiled(vec2(1.0, 3.0), 2.0));
+        left_walls.0.push(PerpWall::new(vec2(1.0, 3.0), 2.0));
 
         StaticMap {
             up_walls,
             down_walls,
             right_walls,
-            left_walls
+            left_walls,
+            is_setup: true
+        }
+    }
+
+    pub fn empty() -> StaticMap {
+        StaticMap {
+            up_walls: PerpWalls::empty(),
+            down_walls: PerpWalls::empty(),
+            right_walls: PerpWalls::empty(),
+            left_walls: PerpWalls::empty(),
+            is_setup: false
         }
     }
 }
@@ -69,7 +99,7 @@ pub fn show_debug(
 }
 
 #[derive(Default, Debug, Clone)]
-pub struct PerpWalls(Vec<PerpWall>);
+pub struct PerpWalls(pub Vec<PerpWall>);
 
 impl PerpWalls {
     pub fn collide(&self, previous_object_pos: f32, current_object_pos: f32, object_slide_pos: f32, object_size: Vec2, wall_push_direction: f32, vertical_wall: bool, gizmos: &mut Gizmos) -> (f32, bool) {
@@ -108,6 +138,14 @@ impl PerpWalls {
             return (current_object_pos, false);
         }
     }
+
+pub fn append(&mut self, other: PerpWalls) {
+    self.0.append(&mut other.0.clone());
+}
+
+    pub fn empty() -> PerpWalls {
+        PerpWalls(Vec::new())
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -117,7 +155,7 @@ pub struct PerpWall {
 }
 
 impl PerpWall {
-    fn new_tiled(position: Vec2, length: f32) -> Self {
+    pub fn new(position: Vec2, length: f32) -> Self {
         PerpWall {
             position: position,
             length: length

@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-bevy = "0.14.0"
+bevy = { version = "0.14.0" }
 bevy_framepace = "0.17.1"
 bevy_editor_pls = { git = "https://github.com/zhaop/bevy_editor_pls", branch = "bevy-0.14" }
-bevy-inspector-egui = "0.25.1"
+bevy-inspector-egui = "0.26.0"
 
 runner = { path = "runner" }
 bevy_ecs_tilemap = "0.14.0"
