@@ -1,6 +1,5 @@
-use bevy::{prelude::*, render::camera};
+use bevy::prelude::*;
 use bevy_ecs_ldtk::prelude::*;
-use bevy_ecs_tilemap::helpers::transform;
 use runner::Object;
 
 
@@ -27,25 +26,27 @@ pub fn spawn_player_system(
   }
 
 pub fn player_system(
-    mut query: Query<(&mut Object, &Transform), With<Player>>,
-    mut camera_query: Query<&mut Transform, (With<Camera>, Without<Player>)>,
+    mut query: Query<(&mut Object, &mut Sprite), With<Player>>,
     time: Res<Time>,
     input: Res<ButtonInput<KeyCode>>
 ) {
-    let (mut player_object, player_transform) = query.single_mut();
-    let mut camera_transform = camera_query.single_mut();
+    let (mut player_object, mut player_sprite) = query.single_mut();
     
     let movement_input = (input.pressed(KeyCode::KeyD) as i8 - input.pressed(KeyCode::KeyA) as i8) as f32;
     let jump_input = input.just_pressed(KeyCode::Space);
     player_object.velocity.x += movement_input * 750.0 * time.delta_seconds();
+
+
+    // Flip sprite
+    if movement_input != 0.0 {
+        player_sprite.flip_x = if movement_input == -1.0 { true } else { false };
+    }
     
-    if jump_input && player_object.is_on_floor {
+    if player_object.is_on_wall.down && jump_input {
         player_object.velocity.y = 100.0;
     }
 
     player_object.velocity.x *= (0.1 as f32).powf(time.delta_seconds());
-
-    camera_transform.translation = player_transform.translation;
 }
 
 #[derive(Component, Default)]

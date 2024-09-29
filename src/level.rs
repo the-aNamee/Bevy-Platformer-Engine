@@ -1,7 +1,6 @@
-use bevy::{math::vec2, prelude::*};
+use bevy::{math::vec2, prelude::*, render::camera::ScalingMode};
 use bevy_ecs_ldtk::prelude::*;
 use bevy_ecs_tilemap::{map::TilemapTileSize, tiles::TilePos};
-// use bevy_ecs_tilemap::helpers::transform;
 use runner::{LevelProperties, Object, ObjectProperties, PerpWall, PerpWalls, StaticMap};
 use crate::player::{Player, PlayerSpawnPoint};
 
@@ -13,8 +12,9 @@ pub fn setup_level_system(
     // Spawn camera
     commands.spawn(Camera2dBundle {
         projection: OrthographicProjection {
-            scale: 0.25,
             near: -1000.0,
+            // scaling_mode: ScalingMode::WindowSize(4.0),
+            scaling_mode: ScalingMode::FixedVertical(0xC0 as f32),
             ..default()
         },
         ..default()
@@ -32,7 +32,7 @@ pub fn setup_level_system(
 
 
     // Player.
-    let size = vec2(16.0, 24.0);
+    let size = vec2(8.0, 12.0);
     let texture = asset_server.load("player.png");
     commands.spawn((
         SpriteBundle {
@@ -127,10 +127,10 @@ pub fn setup_collision_map_system(
         }
     }
     
-    static_map.right_walls.append(new_right_walls);
-    static_map.left_walls.append(new_left_walls);
-    static_map.up_walls.append(new_up_walls);
-    static_map.down_walls.append(new_down_walls);
+    static_map.walls.right.append(new_right_walls);
+    static_map.walls.left.append(new_left_walls);
+    static_map.walls.up.append(new_up_walls);
+    static_map.walls.down.append(new_down_walls);
     
     static_map.is_setup = true;
 }

@@ -3,15 +3,10 @@
 	"uniqueIdentifer": "44349390-4ce0-11ef-b058-69d480bba27f",
 	"x": 0,
 	"y": 0,
-	"width": 560,
+	"width": 896,
 	"height": 192,
 	"bgColor": "#86A0FA",
-	"neighbourLevels": [
-		{
-			"levelIid": "90c79bd0-4ce0-11ef-9915-613837ba9470",
-			"dir": "e"
-		}
-	],
+	"neighbourLevels": [],
 	"customFields" : {},
 	"layers": [
 		"Ground.png"
@@ -22,10 +17,10 @@
 				"id": "PlayerSpawnPoint",
 				"iid": "e13fb4e0-4ce0-11ef-8c88-9fd0c07e0027",
 				"layer": "Entities",
-				"x": 92,
-				"y": 112,
-				"width": 16,
-				"height": 24,
+				"x": 76,
+				"y": 128,
+				"width": 8,
+				"height": 12,
 				"color": 16777215,
 				"customFields" : {}
 			}

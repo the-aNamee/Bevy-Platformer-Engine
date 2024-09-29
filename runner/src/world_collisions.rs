@@ -1,7 +1,5 @@
-use std::iter::Cloned;
 
-use bevy::{color::palettes::basic::*, ecs::query::QueryIter, math::vec2, prelude::*};
-use bevy_ecs_tilemap::prelude::*;
+use bevy::{color::palettes::basic::*, math::vec2, prelude::*};
 
 // use crate::object;
 use crate::globals::Directional;
@@ -14,68 +12,19 @@ pub const LEFT_WALL_PUSH_DIRECTION: Vec2 = vec2(1.0, 0.0);
 
 #[derive(Component, Debug)]
 pub struct StaticMap {
-    // pub walls: Directional<PerpWalls>,
-    pub right_walls: PerpWalls,
-    pub left_walls: PerpWalls,
-    pub up_walls: PerpWalls,
-    pub down_walls: PerpWalls,
+    pub walls: Directional<PerpWalls>,
     pub is_setup: bool
 }
 
 impl StaticMap {
-    // pub fn add_tiles<'a, 'b>(
-    //         &mut self,
-    //         tiles: Query<'_, '_, &TilePos>
-    //     ) {
-    //     let mut new_up_perp_walls = PerpWalls::empty();
-
-    //     for tile_position in tiles.iter() {
-    //         let tile_vec_pos = vec2(tile_position.x as f32, tile_position.y as f32);
-    //         let new_pos = tile_vec_pos;
-    //         // let new_perp_wall = PerpWall::new()
-    //     }
-    // }
-
-    pub fn _debug_test() -> Self {
-        let mut up_walls = PerpWalls(Vec::new());
-        up_walls.0.push(PerpWall::new(vec2(1.0, 0.0), 4.0));
-        // up_walls.0.push(PerpWall::new_tiled(vec2(3.0, 2.0), 0.0));``
-        up_walls.0.push(PerpWall::new(vec2(5.0, -3.0), 1.0));
-
-        let mut down_walls = PerpWalls(Vec::new());
-        down_walls.0.push(PerpWall::new(vec2(-1.0, 3.0), 2.0));
-
-        let mut right_walls = PerpWalls(Vec::new());
-        right_walls.0.push(PerpWall::new(vec2(5.0, 3.0), 2.0));
-
-        let mut left_walls = PerpWalls(Vec::new());
-        left_walls.0.push(PerpWall::new(vec2(1.0, 3.0), 2.0));
-
-        StaticMap {
-            up_walls,
-            down_walls,
-            right_walls,
-            left_walls,
-            is_setup: true
-        }
-    }
-
     pub fn empty() -> StaticMap {
         StaticMap {
-            up_walls: PerpWalls::empty(),
-            down_walls: PerpWalls::empty(),
-            right_walls: PerpWalls::empty(),
-            left_walls: PerpWalls::empty(),
+            walls: Directional::new_all(PerpWalls::empty()),
             is_setup: false
         }
     }
 }
 
-// pub fn setup_level(
-//     mut commands: Commands
-// ) {
-//     commands.spawn(StaticMap::_debug_test());
-// }
 
 pub fn show_debug(
     mut gizmos: Gizmos,
@@ -91,10 +40,10 @@ pub fn show_debug(
     }
 
     for static_map in &static_maps {
-        do_stuff(&mut gizmos, &static_map.up_walls, vec2(1.0, 0.0), BLUE);
-        do_stuff(&mut gizmos, &static_map.down_walls, vec2(1.0, 0.0), GREEN);
-        do_stuff(&mut gizmos, &static_map.right_walls, vec2(0.0, 1.0), YELLOW);
-        do_stuff(&mut gizmos, &static_map.left_walls, vec2(0.0, 1.0), RED);
+        do_stuff(&mut gizmos, &static_map.walls.up, vec2(1.0, 0.0), BLUE);
+        do_stuff(&mut gizmos, &static_map.walls.down, vec2(1.0, 0.0), GREEN);
+        do_stuff(&mut gizmos, &static_map.walls.right, vec2(0.0, 1.0), YELLOW);
+        do_stuff(&mut gizmos, &static_map.walls.left, vec2(0.0, 1.0), RED);
     }
 }
 
