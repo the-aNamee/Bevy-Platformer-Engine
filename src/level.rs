@@ -1,4 +1,4 @@
-use bevy::{math::vec2, prelude::*, render::camera::ScalingMode};
+use bevy::{math::{vec2, vec3}, prelude::*, render::camera::ScalingMode};
 use bevy_ecs_ldtk::prelude::*;
 use bevy_ecs_tilemap::{map::TilemapTileSize, tiles::TilePos};
 use runner::{LevelProperties, Object, ObjectProperties, PerpWall, PerpWalls, StaticMap};
@@ -42,14 +42,14 @@ pub fn setup_level_system(
             },
             texture,
             transform: Transform {
-                translation: vec2(0.0, 148.0).extend(0.0),
+                translation: vec3(0.0, 148.0, 100.0),
                 ..default()
             },
             ..default()
         },
         Player::default(),
         Object::basic(),
-        ObjectProperties::new(size),
+        ObjectProperties::new(vec2(4.0, 12.0)),
         Name::new("Da Player")
     ));
 
@@ -127,10 +127,10 @@ pub fn setup_collision_map_system(
         }
     }
     
-    static_map.walls.right.append(new_right_walls);
-    static_map.walls.left.append(new_left_walls);
-    static_map.walls.up.append(new_up_walls);
-    static_map.walls.down.append(new_down_walls);
+    static_map.perp_walls.right.append(new_right_walls);
+    static_map.perp_walls.left.append(new_left_walls);
+    static_map.perp_walls.up.append(new_up_walls);
+    static_map.perp_walls.down.append(new_down_walls);
     
     static_map.is_setup = true;
 }

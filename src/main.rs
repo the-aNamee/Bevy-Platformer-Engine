@@ -2,7 +2,7 @@ use bevy::prelude::*;
 use bevy_framepace::FramepacePlugin;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
 use bevy_ecs_ldtk::prelude::*;
-use runner::{dir_for_each_many, EnginePlugin, LevelProperties, Direction, DIRECTIONAL_DIRS};
+use runner::{dir_for_each_many, show_debug, Direction, EnginePlugin, LevelProperties, DIRECTIONAL_DIRS};
 use camera::camera_system;
 use level::{setup_collision_map_system, setup_level_system, RegisterLdtkEntites};
 use player::{player_system, spawn_player_system};
@@ -39,6 +39,7 @@ fn main() {
         .add_systems(Startup, setup_framerate)
         .add_systems(Startup, setup_level_system)
         .add_systems(Update, (spawn_player_system, setup_collision_map_system))
+        .add_systems(Update, show_debug)
         .add_systems(Update, player_system)
         .add_systems(PostUpdate, camera_system)
         .run();

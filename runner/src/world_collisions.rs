@@ -4,22 +4,21 @@ use bevy::{color::palettes::basic::*, math::vec2, prelude::*};
 // use crate::object;
 use crate::globals::Directional;
 
-pub const UP_WALL_PUSH_DIRECTION: Vec2 = vec2(0.0, 1.0);
-pub const DOWN_WALL_PUSH_DIRECTION: Vec2 = vec2(0.0, -1.0);
-pub const RIGHT_WALL_PUSH_DIRECTION: Vec2 = vec2(-1.0, 0.0);
-pub const LEFT_WALL_PUSH_DIRECTION: Vec2 = vec2(1.0, 0.0);
+
 
 
 #[derive(Component, Debug)]
 pub struct StaticMap {
-    pub walls: Directional<PerpWalls>,
+    pub perp_walls: Directional<PerpWalls>,
+    pub dag_walls: DagWalls,
     pub is_setup: bool
 }
 
 impl StaticMap {
     pub fn empty() -> StaticMap {
         StaticMap {
-            walls: Directional::new_all(PerpWalls::empty()),
+            perp_walls: Directional::new_all(PerpWalls::empty()),
+            dag_walls: DagWalls::default(),
             is_setup: false
         }
     }
@@ -40,15 +39,26 @@ pub fn show_debug(
     }
 
     for static_map in &static_maps {
-        do_stuff(&mut gizmos, &static_map.walls.up, vec2(1.0, 0.0), BLUE);
-        do_stuff(&mut gizmos, &static_map.walls.down, vec2(1.0, 0.0), GREEN);
-        do_stuff(&mut gizmos, &static_map.walls.right, vec2(0.0, 1.0), YELLOW);
-        do_stuff(&mut gizmos, &static_map.walls.left, vec2(0.0, 1.0), RED);
+        do_stuff(&mut gizmos, &static_map.perp_walls.up, vec2(1.0, 0.0), BLUE);
+        do_stuff(&mut gizmos, &static_map.perp_walls.down, vec2(1.0, 0.0), GREEN);
+        do_stuff(&mut gizmos, &static_map.perp_walls.right, vec2(0.0, 1.0), YELLOW);
+        do_stuff(&mut gizmos, &static_map.perp_walls.left, vec2(0.0, 1.0), RED);
     }
 }
 
-#[derive(Default, Debug, Clone)]
+
+
+// Perpindicuar walls
+
+#[derive(Debug, Clone)]
 pub struct PerpWalls(pub Vec<PerpWall>);
+
+#[derive(Debug, Clone)]
+pub struct PerpWall {
+    position: Vec2,
+    length: f32
+}
+
 
 impl PerpWalls {
     pub fn collide(&self, previous_object_pos: f32, current_object_pos: f32, object_slide_pos: f32, object_size: Vec2, wall_push_direction: f32, vertical_wall: bool, gizmos: &mut Gizmos) -> (f32, bool) {
@@ -97,17 +107,39 @@ pub fn append(&mut self, other: PerpWalls) {
     }
 }
 
-#[derive(Debug, Clone)]
-pub struct PerpWall {
-    position: Vec2,
-    length: f32
-}
-
 impl PerpWall {
     pub fn new(position: Vec2, length: f32) -> Self {
         PerpWall {
             position: position,
             length: length
         }
+    }
+}
+
+
+
+// DagWall
+
+#[derive(Default, Debug, Clone)]
+pub struct DagWalls(pub Vec<DagWall>);
+
+
+#[derive(Debug, Clone)]
+pub struct DagWall {
+    pub pos_a: Vec2,
+    pub pos_b: Vec2
+}
+
+
+impl DagWalls {
+    pub fn empty() -> DagWalls {
+        DagWalls(Vec::default())
+    }
+
+    pub fn add(&mut self, pos_a: Vec2, pos_b: Vec2) {
+        self.0.push(DagWall {
+            pos_a,
+            pos_b
+        });
     }
 }

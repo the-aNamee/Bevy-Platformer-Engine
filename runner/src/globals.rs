@@ -39,6 +39,7 @@ impl<T> Directional<T> {
         else { &mut self.down }
     }
 
+
     pub fn for_each<F>(&self, mut f: F)
     where 
         F: FnMut(&T, Vec2, Direction),
