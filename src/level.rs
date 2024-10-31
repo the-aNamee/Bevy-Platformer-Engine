@@ -55,7 +55,9 @@ pub fn setup_level_system(
 
     
     // Spawn Static Map
-    commands.spawn((StaticMap::empty(), MainStaticMap));
+    let mut map = StaticMap::empty();
+    map.dag_walls.add(vec2(740.0, 86.0), vec2(860.0, 102.0));
+    commands.spawn((map, MainStaticMap));
 }
 
 pub fn setup_collision_map_system(

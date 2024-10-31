@@ -1,7 +1,8 @@
 use crate::globals::{Directional};
-use crate::world_collisions::StaticMap;
+use crate::world_collisions::{DagCollisionType, StaticMap};
 use crate::properties::LevelProperties;
 use crate::DIRECTIONAL_VEC2S;
+use crate::Direction;
 use bevy::prelude::*;
 
 
@@ -29,6 +30,7 @@ pub fn basic_object_system(
         let mut cpos = transform.translation.truncate();
 
         for static_map in &wall_query {
+            // Perp walls
             let (new, done) = static_map.perp_walls.up.collide(ppos.y, cpos.y, cpos.x, object_properties.size, DIRECTIONAL_VEC2S.up.y, true, &mut gizmos);
             transform.translation.y = new;
             cpos.y = new;
@@ -55,6 +57,13 @@ pub fn basic_object_system(
             cpos.x = new;
             object.velocity.x = if done {0.0} else {object.velocity.x};
             object.is_on_wall.left = done;
+
+
+
+            // Diagonal walls
+            let new = static_map.dag_walls.collide(ppos, cpos, object_properties.size, &mut gizmos);
+            transform.translation = new.extend(transform.translation.z);
+            cpos = new;
         }
     }
 }
@@ -92,5 +101,40 @@ impl ObjectProperties {
             size,
             gravity_multiplier: Vec2::ONE
         }
+    }
+}
+
+
+
+// Rotation settings
+pub struct AngleSettings(pub Vec<AngleSetting>);
+
+pub struct AngleSetting {
+    pub angle: f32,
+    pub collides_with: Direction,
+    pub collision_type: DagCollisionType
+}
+
+
+impl AngleSettings {
+    pub fn empty() -> AngleSettings {
+        AngleSettings(Vec::new())
+    }
+    
+    pub fn add_angle(&mut self, angle: f32, dir: Direction) {
+        self.add_angle_full(angle, dir, DagCollisionType::from_dir(dir));
+    }
+
+    pub fn add_slide_angle(&mut self, angle: f32, dir: Direction) {
+        self.add_angle_full(angle, dir, DagCollisionType::Close);
+    }
+
+    pub fn add_angle_full(&mut self, angle: f32, collides_with: Direction, collision_type: DagCollisionType) {
+        let angle = angle.to_radians();
+        self.0.push(AngleSetting {
+            angle,
+            collides_with,
+            collision_type
+        });
     }
 }

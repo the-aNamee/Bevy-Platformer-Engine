@@ -1,5 +1,6 @@
 
-use bevy::{color::palettes::basic::*, math::vec2, prelude::*};
+use bevy::{color::palettes::{basic::*, css::{ORANGE, PINK}}, math::vec2, prelude::*};
+use crate::globals::Direction;
 
 // use crate::object;
 use crate::globals::Directional;
@@ -43,6 +44,11 @@ pub fn show_debug(
         do_stuff(&mut gizmos, &static_map.perp_walls.down, vec2(1.0, 0.0), GREEN);
         do_stuff(&mut gizmos, &static_map.perp_walls.right, vec2(0.0, 1.0), YELLOW);
         do_stuff(&mut gizmos, &static_map.perp_walls.left, vec2(0.0, 1.0), RED);
+
+        // Dag walls
+        for wall in static_map.dag_walls.0.iter() {
+            gizmos.line_2d(wall.pos_a, wall.pos_b, PURPLE);
+        }
     }
 }
 
@@ -61,7 +67,7 @@ pub struct PerpWall {
 
 
 impl PerpWalls {
-    pub fn collide(&self, previous_object_pos: f32, current_object_pos: f32, object_slide_pos: f32, object_size: Vec2, wall_push_direction: f32, vertical_wall: bool, gizmos: &mut Gizmos) -> (f32, bool) {
+    pub fn collide(&self, previous_object_pos: f32, current_object_pos: f32, object_slide_pos: f32, object_size: Vec2, wall_push_direction: f32, vertical_wall: bool, _gizmos: &mut Gizmos) -> (f32, bool) {
         // 'Real' means the position that we care about.
         let pre_real_pos = previous_object_pos - (object_size.y / 2.0) * wall_push_direction;
         let cur_real_pos = current_object_pos - (object_size.y / 2.0) * wall_push_direction;
@@ -141,5 +147,47 @@ impl DagWalls {
             pos_a,
             pos_b
         });
+    }
+
+    pub fn collide(&self, ppos: Vec2, cpos: Vec2, size: Vec2, _gizmos: &mut Gizmos) -> Vec2 {
+        for wall in self.0.iter() {
+            let dir = normalize_weird(wall.pos_b - wall.pos_a);
+            let point_dir = vec2(dir.y, -dir.x);
+            let ppoint = ppos + size * point_dir / 2.0; 
+            let cpoint = cpos + size * point_dir / 2.0; // This is the point of the only part of the object that will actully collide.
+      
+
+            
+            // Get the slope.
+            let m = (wall.pos_a.y - wall.pos_b.y) /* rise over */ / (wall.pos_a.x - wall.pos_b.x) /* run */;
+            // Get the y-intercept.
+            let b = wall.pos_a.y - m * wall.pos_a.x;
+
+            let pin = ppoint.y < m * ppoint.x + b;
+            let cin = cpoint.y < m * cpoint.x + b;
+            
+            if !pin && cin {
+                let npoint /* New point */ = vec2(cpoint.x, m * cpoint.x + b);
+                let npos = npoint + size * point_dir * Vec2::NEG_ONE / 2.0;
+                return npos;
+            }
+        }
+        return cpos;
+    }
+}
+
+fn normalize_weird(a: Vec2) -> Vec2 {
+    vec2((a.x > 0.0) as i32 as f32 * 2.0 - 1.0, (a.y > 0.0) as i32 as f32 * 2.0 - 1.0)
+}
+
+pub enum DagCollisionType {
+    Vertical,
+    Horizontal,
+    Close
+}
+
+impl DagCollisionType {
+    pub fn from_dir(dir: Direction) -> DagCollisionType {
+        if dir.is_horizontal() { DagCollisionType::Horizontal } else { DagCollisionType::Vertical }
     }
 }
